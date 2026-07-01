@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petbbi QA 체크리스트 — Basic</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif; background: #f4f5f7; color: #1a1a2e; line-height: 1.6; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+.header { background: #fff; border-radius: 12px; padding: 32px 36px; margin-bottom: 24px; border-left: 5px solid #6c5ce7; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.level-badge { display: inline-block; background: #6c5ce7; color: white; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; letter-spacing: .5px; }
+.header h1 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+.header-meta { font-size: 13px; color: #6c757d; display: flex; flex-wrap: wrap; gap: 16px; }
+
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat { background: #fff; border-radius: 10px; padding: 20px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,.06); border-top: 4px solid; }
+.stat-n { font-size: 40px; font-weight: 800; }
+.stat-label { font-size: 13px; color: #666; margin-top: 2px; }
+.stat-pct { font-size: 13px; font-weight: 600; margin-top: 6px; }
+.c-red { border-color: #e63946; color: #e63946; }
+.c-purple { border-color: #6c5ce7; color: #6c5ce7; }
+.c-blue { border-color: #4361ee; color: #4361ee; }
+.c-gray { border-color: #6c757d; color: #6c757d; }
+
+.section { background: #fff; border-radius: 12px; padding: 28px 32px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.section-title { font-size: 15px; font-weight: 700; padding-bottom: 14px; margin-bottom: 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 8px; }
+
+.bar-row { margin-bottom: 12px; }
+.bar-meta { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; font-weight: 500; }
+.bar-track { background: #f0f2f5; border-radius: 6px; height: 30px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 12px; color: white; font-size: 12px; font-weight: 700; letter-spacing: .3px; }
+
+.filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.f-btn { padding: 5px 14px; border: 1.5px solid #dee2e6; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; background: white; color: #444; transition: all .15s; }
+.f-btn:hover { border-color: #adb5bd; }
+.f-btn.on { background: #1a1a2e; color: white; border-color: #1a1a2e; }
+.filter-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.filter-label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .5px; display: flex; align-items: center; margin-right: 4px; }
+
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+thead th { background: #f8f9fa; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: #6c757d; padding: 10px 10px; text-align: left; border-bottom: 2px solid #e9ecef; white-space: nowrap; }
+tbody td { padding: 9px 10px; border-bottom: 1px solid #f0f2f5; vertical-align: top; }
+tbody tr:hover { background: #f8f9fb; }
+.note { font-size: 12px; color: #888; margin-bottom: 12px; }
+.tid { font-weight: 700; color: #6c5ce7; white-space: nowrap; }
+.count-badge { font-size: 11px; background: #f0f2f5; color: #666; padding: 2px 6px; border-radius: 10px; margin-left: 4px; }
+
+.badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 5px; white-space: nowrap; }
+.t-happy { background: #d0ebe0; color: #1f5c3d; }
+.t-unhappy { background: #ffe3cf; color: #b5560a; }
+.t-edge { background: #ede0ff; color: #5b2bb0; }
+.p-p0 { background: #ffe0e3; color: #c9323e; }
+.p-p1 { background: #fff3cd; color: #856404; }
+.p-p2 { background: #e9ecef; color: #495057; }
+.src { display: inline-block; font-size: 10.5px; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+.src-spec { background: #e2ecff; color: #2d51c4; }
+.src-ai { background: #ffe9f4; color: #c11a6b; font-weight: 700; }
+
+.edge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.edge-card { border-radius: 10px; padding: 18px; border: 1px solid #eee; border-left: 4px solid #6c5ce7; }
+.edge-type { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #6c5ce7; margin-bottom: 8px; }
+.edge-title { font-size: 13px; font-weight: 700; line-height: 1.5; margin-bottom: 8px; }
+.edge-body { font-size: 12px; line-height: 1.6; color: #444; }
+
+.dec-table td { font-size: 12.5px; }
+.dec-table td:first-child { font-weight: 600; white-space: nowrap; color: #444; min-width: 120px; }
+
+.score-info { background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; font-size: 13px; }
+.score-info strong { color: #6c5ce7; }
+
+.select-wrap { position: relative; display: inline-block; }
+.f-select { appearance: none; -webkit-appearance: none; padding: 5px 28px 5px 12px; border: 1.5px solid #dee2e6; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; background: white; color: #444; outline: none; transition: border-color .15s; }
+.f-select:focus, .f-select:hover { border-color: #6c5ce7; }
+.select-wrap::after { content: '▾'; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 11px; color: #888; }
+.filter-divider { width: 1px; height: 20px; background: #dee2e6; margin: 0 4px; display: inline-block; vertical-align: middle; }
+.result-info { font-size: 12px; color: #888; margin-top: 10px; padding: 6px 10px; background: #f8f9fa; border-radius: 6px; display: inline-block; }
+
+@media(max-width:760px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .edge-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <div class="level-badge">🟢 Basic — 100점</div>
+  <h1>Petbbi(펫삐) QA 체크리스트 — 기획서 기반 자동 생성</h1>
+  <div class="header-meta">
+    <span>📄 입력: product_spec_petbbi_v1.md (기능 섹션 6개 · 세부항목 17개)</span>
+    <span>✅ 테스트 케이스 <strong>67건</strong> (기획서기반 38 · AI추가 29)</span>
+    <span>📆 2026-07-01</span>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-row">
+  <div class="stat c-purple"><div class="stat-n">67</div><div class="stat-label">총 테스트 케이스</div><div class="stat-pct">6개 섹션 전체 커버</div></div>
+  <div class="stat c-red"><div class="stat-n">12</div><div class="stat-label">P0 (Blocker)</div><div class="stat-pct">17.9%</div></div>
+  <div class="stat c-blue"><div class="stat-n">23</div><div class="stat-label">P1 (Major)</div><div class="stat-pct">34.3%</div></div>
+  <div class="stat c-gray"><div class="stat-n">29</div><div class="stat-label">AI추가 엣지</div><div class="stat-pct">5유형 전체 커버</div></div>
+</div>
+
+<!-- Type distribution -->
+<div class="section">
+  <div class="section-title">📊 테스트 유형 분포</div>
+  <div class="bar-row">
+    <div class="bar-meta"><span>Happy Path</span><span>17건 (25.4%)</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:25.4%;background:#2d6a4f">25.4%</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-meta"><span>Unhappy Path</span><span>21건 (31.3%)</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:31.3%;background:#e76f51">31.3%</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-meta"><span>Edge Case (AI추가 포함)</span><span>29건 (43.3%)</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:43.3%;background:#6c5ce7">43.3%</div></div>
+  </div>
+</div>
+
+<!-- Priority scoring -->
+<div class="section">
+  <div class="section-title">⚖️ 우선순위 점수화 기준 (본인 설계)</div>
+  <div class="score-info">
+    우선순위 = <strong>서비스 중단 여부(50%)</strong> + <strong>영향 사용자 범위(30%)</strong> + <strong>우회 가능성(20%)</strong><br>
+    총점 <strong>80점 이상 → P0</strong> / 50~79점 → P1 / 50점 미만 → P2 &nbsp;·&nbsp; 서비스 중단·전체 영향·비가역 3요소가 겹치면 즉시 P0 승격
+  </div>
+</div>
+
+<!-- Checklist table -->
+<div class="section">
+  <div class="section-title">📋 QA 체크리스트 (67건 · 9컬럼)</div>
+  <p class="note">⚠️ 출처 "AI추가" = 기획서에 없던 엣지케이스를 AI가 자동 발굴·보완한 케이스. 우선순위는 서비스 중단·사용자 영향도 기준 점수화 적용.</p>
+
+  <div style="margin-bottom:12px">
+    <div class="filter-group">
+      <span class="filter-label">섹션</span>
+      <button class="f-btn on" onclick="ft('sec','all',this)">전체 (67)</button>
+      <button class="f-btn" onclick="ft('sec','s1',this)">프로필 등록 (16)</button>
+      <button class="f-btn" onclick="ft('sec','s2',this)">캐릭터 생성 (10)</button>
+      <button class="f-btn" onclick="ft('sec','s3',this)">일기 자동생성 (10)</button>
+      <button class="f-btn" onclick="ft('sec','s4',this)">커뮤니티 피드 (11)</button>
+      <button class="f-btn" onclick="ft('sec','s5',this)">알림 (7)</button>
+      <button class="f-btn" onclick="ft('sec','s6',this)">계정·인증 (13)</button>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">우선순위</span>
+      <button class="f-btn on" onclick="ft('pri','all',this)">전체</button>
+      <button class="f-btn" onclick="ft('pri','P0',this)">P0만 (12)</button>
+      <button class="f-btn" onclick="ft('pri','P1',this)">P1만 (23)</button>
+      <button class="f-btn" onclick="ft('pri','P2',this)">P2만 (32)</button>
+    </div>
+    <div class="filter-group" style="align-items:center;margin-top:4px">
+      <span class="filter-label">테스트 유형</span>
+      <div class="select-wrap">
+        <select class="f-select" id="typeSelect" onchange="ft('type', this.value, this)">
+          <option value="all">전체 유형 (67)</option>
+          <option value="Happy Path">Happy Path (17)</option>
+          <option value="Unhappy Path">Unhappy Path (21)</option>
+          <option value="Edge Case">Edge Case (29)</option>
+        </select>
+      </div>
+      <span class="filter-divider"></span>
+      <span class="filter-label" style="margin-left:4px">페이지당 표시</span>
+      <div class="select-wrap">
+        <select class="f-select" id="perPageSelect" onchange="changePerPage(this.value)">
+          <option value="20">20개씩 보기</option>
+          <option value="50">50개씩 보기</option>
+          <option value="all">전체 보기</option>
+        </select>
+      </div>
+    </div>
+    <div id="resultInfo" class="result-info">총 67건 표시 중</div>
+  </div>
+
+  <div class="tbl-wrap">
+  <table id="qt">
+    <thead><tr><th>기능섹션</th><th>TC-ID</th><th>테스트케이스제목</th><th>유형</th><th>사전조건</th><th>테스트절차</th><th>기대결과</th><th>우선순위</th><th>출처</th></tr></thead>
+    <tbody>
+      <tr data-s="s1" data-pri="P0"><td>프로필 등록</td><td class="tid">TC-001</td><td>필수 정보만 입력 후 다음 단계 진행</td><td><span class="badge t-happy">Happy</span></td><td>앱 최초 실행 후 로그인 완료 상태</td><td>이름·종류만 입력(품종·생년월일·성별 미입력) 후 다음 버튼 클릭</td><td>입력값이 저장되고 대표 사진 업로드 화면으로 정상 이동함</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s1" data-pri="P2"><td>프로필 등록</td><td class="tid">TC-002</td><td>이름 미입력 시 다음 단계 진행 차단</td><td><span class="badge t-unhappy">Unhappy</span></td><td>프로필 등록 화면 진입 상태</td><td>이름 필드를 공백으로 두고 다음 버튼 클릭</td><td>이름을 입력해주세요 오류 메시지가 표시되고 다음 화면으로 이동하지 않음</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s1" data-pri="P2"><td>프로필 등록</td><td class="tid">TC-003</td><td>이름 21자 입력 시 입력 제한</td><td><span class="badge t-unhappy">Unhappy</span></td><td>프로필 등록 화면 진입 상태</td><td>이름 필드에 21자 이상 텍스트 입력 시도</td><td>20자를 초과하는 입력이 차단되거나 저장 시 초과 안내가 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s1" data-pri="P2"><td>프로필 등록</td><td class="tid">TC-004</td><td>이름에 이모지 입력 시 정상 등록</td><td><span class="badge t-happy">Happy</span></td><td>프로필 등록 화면 진입 상태</td><td>이름 필드에 이모지 포함 텍스트(예: 콩이🐶) 입력 후 다음 버튼 클릭</td><td>이모지가 포함된 이름이 오류 없이 저장되고 다음 화면으로 이동함</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s1" data-pri="P2"><td>프로필 등록</td><td class="tid">TC-005</td><td>생년월일에 미래 날짜 선택 시도</td><td><span class="badge t-unhappy">Unhappy</span></td><td>프로필 등록 화면의 생년월일 캘린더 진입 상태</td><td>캘린더에서 오늘 이후 날짜 선택 시도</td><td>오늘 이후 날짜는 캘린더에서 선택 불가(비활성)로 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s1" data-pri="P1"><td>프로필 등록</td><td class="tid">TC-006</td><td>프로필 6번째 등록 시도(최대 5마리 제한)</td><td><span class="badge t-unhappy">Unhappy</span></td><td>동일 계정에 반려동물 프로필 5마리가 이미 등록된 상태</td><td>프로필 추가 등록 화면 진입 후 6번째 프로필 등록 시도</td><td>최대 5마리 등록 제한 안내가 표시되고 추가 등록이 차단됨</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s1" data-pri="P1"><td>프로필 등록</td><td class="tid">TC-007</td><td>카메라 권한 미허용 상태에서 사진 촬영 시도</td><td><span class="badge t-edge">Edge</span></td><td>OS 설정에서 앱의 카메라 권한이 거부된 상태</td><td>대표 사진 업로드 화면에서 카메라로 촬영 선택</td><td>권한 필요 안내 팝업이 표시되고 갤러리 선택 등 대체 경로로 진행 가능하며 앱 크래시가 발생하지 않음</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s1" data-pri="P1"><td>프로필 등록</td><td class="tid">TC-008</td><td>갤러리 접근 권한 미허용 상태에서 사진 선택 시도</td><td><span class="badge t-edge">Edge</span></td><td>OS 설정에서 앱의 갤러리(사진) 접근 권한이 거부된 상태</td><td>대표 사진 업로드 화면에서 갤러리에서 선택 클릭</td><td>권한 필요 안내 팝업이 표시되며 업로드 화면이 유지되고 앱 크래시가 발생하지 않음</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s1" data-pri="P2"><td>프로필 등록</td><td class="tid">TC-009</td><td>지원하지 않는 파일 형식 업로드 시도</td><td><span class="badge t-unhappy">Unhappy</span></td><td>대표 사진 업로드 화면 진입 상태</td><td>GIF 또는 PDF 파일을 대표 사진으로 선택 시도</td><td>지원하지 않는 형식이라는 안내가 표시되고 업로드가 진행되지 않음</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s1" data-pri="P2"><td>프로필 등록</td><td class="tid">TC-010</td><td>최소 해상도(512×512px) 미만 사진 업로드</td><td><span class="badge t-edge">Edge</span></td><td>대표 사진 업로드 화면 진입 상태</td><td>400×400px 크기의 이미지를 대표 사진으로 업로드 시도</td><td>권장 최소 해상도 미달 안내가 표시되며 업로드 허용 여부가 명확한 메시지와 함께 처리됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s1" data-pri="P1"><td>프로필 등록</td><td class="tid">TC-011</td><td>초고해상도 사진 업로드(최대 해상도 명세 누락)</td><td><span class="badge t-edge">Edge</span></td><td>대표 사진 업로드 화면 진입 상태</td><td>8000×8000px 이상의 초고해상도 이미지를 대표 사진으로 업로드 시도</td><td>해상도 상한 초과 시 처리 결과(리사이즈 또는 차단)가 명확히 안내되며 앱이 크래시되지 않음</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s1" data-pri="P1"><td>프로필 등록</td><td class="tid">TC-012</td><td>10MB 초과 대용량 이미지 업로드(용량 기준 명세 누락)</td><td><span class="badge t-edge">Edge</span></td><td>대표 사진 업로드 화면 진입 상태</td><td>10MB를 초과하는 이미지 파일을 대표 사진으로 업로드 시도</td><td>용량 초과 안내가 표시되고 업로드가 차단되며 앱이 크래시되지 않음</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s1" data-pri="P1"><td>프로필 등록</td><td class="tid">TC-013</td><td>사진 업로드 중 네트워크 연결 끊김</td><td><span class="badge t-edge">Edge</span></td><td>대표 사진 업로드가 진행 중인 상태</td><td>업로드 진행 중 기기의 네트워크 연결을 강제로 차단</td><td>업로드 실패 안내와 재시도 버튼이 표시되고 무한 로딩 상태로 남지 않음</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s1" data-pri="P2"><td>프로필 등록</td><td class="tid">TC-014</td><td>등록된 반려동물 0마리 상태의 빈 화면</td><td><span class="badge t-edge">Edge</span></td><td>신규 가입 후 반려동물 프로필을 한 번도 등록하지 않은 상태</td><td>홈 또는 프로필 화면 진입</td><td>반려동물을 등록해주세요 등 빈 상태 안내와 등록 유도 버튼이 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s1" data-pri="P2"><td>프로필 등록</td><td class="tid">TC-015</td><td>프로필 삭제 시 캐릭터·일기 동반 삭제</td><td><span class="badge t-happy">Happy</span></td><td>캐릭터와 일기가 생성되어 있는 반려동물 프로필 존재</td><td>해당 프로필을 삭제</td><td>프로필과 함께 연결된 캐릭터·일기가 모두 삭제되어 목록에서 조회되지 않음</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s1" data-pri="P1"><td>프로필 등록</td><td class="tid">TC-016</td><td>대표 반려동물로 지정된 프로필 삭제 시도</td><td><span class="badge t-edge">Edge</span></td><td>여러 마리 중 1마리가 대표 반려동물로 지정된 상태</td><td>대표로 지정된 프로필을 삭제</td><td>대표 지정이 해제되고 다른 프로필이 자동 지정되거나 재지정 안내가 표시되며 크래시가 발생하지 않음</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s2" data-pri="P0"><td>캐릭터 생성</td><td class="tid">TC-017</td><td>정상 캐릭터 생성 요청</td><td><span class="badge t-happy">Happy</span></td><td>대표 사진이 등록된 프로필 존재</td><td>성격 키워드 3개 선택 후 AI 캐릭터 만들기 클릭</td><td>15~30초 내 정면/측면/전신 캐릭터 3종 카드와 성격 요약 문구가 표시됨</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s2" data-pri="P1"><td>캐릭터 생성</td><td class="tid">TC-018</td><td>대표 사진 없이 캐릭터 생성 시도</td><td><span class="badge t-unhappy">Unhappy</span></td><td>대표 사진이 등록되지 않은 프로필 존재</td><td>AI 캐릭터 만들기 진입 시도</td><td>대표 사진 등록을 유도하는 안내가 표시되고 생성이 시작되지 않음</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s2" data-pri="P2"><td>캐릭터 생성</td><td class="tid">TC-019</td><td>성격 키워드 0개 선택 후 생성 시도(최소 개수 미정)</td><td><span class="badge t-edge">Edge</span></td><td>대표 사진이 등록된 프로필 존재</td><td>성격 키워드를 하나도 선택하지 않고 AI 캐릭터 만들기 클릭</td><td>최소 1개 이상 선택 필요 안내가 표시되거나 키워드 없이도 생성되는 기준이 명확히 정의되어 동작함</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s2" data-pri="P2"><td>캐릭터 생성</td><td class="tid">TC-020</td><td>성격 키워드 4개 이상 선택 시도(최대 3개 제한)</td><td><span class="badge t-unhappy">Unhappy</span></td><td>성격 키워드가 이미 3개 선택된 상태</td><td>4번째 키워드 선택 시도</td><td>4번째 선택이 차단되거나 선택 시 안내가 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s2" data-pri="P0"><td>캐릭터 생성</td><td class="tid">TC-021</td><td>캐릭터 생성 중 네트워크 연결 끊김</td><td><span class="badge t-edge">Edge</span></td><td>캐릭터 생성이 진행 중인 상태(로딩 화면 표시 중)</td><td>생성 진행 중 네트워크 연결을 강제로 차단</td><td>생성 실패 안내와 재시도 옵션이 표시되고 무한 로딩으로 남지 않음 (재생성 횟수 미차감)</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s2" data-pri="P1"><td>캐릭터 생성</td><td class="tid">TC-022</td><td>AI 분석 신뢰도 기준 미달 사진으로 생성 시도(AI 폴백)</td><td><span class="badge t-edge">Edge</span></td><td>반려동물이 아닌 사물·풍경 사진이 대표 사진으로 등록된 상태</td><td>AI 캐릭터 만들기 클릭</td><td>분석 실패 안내와 재업로드 유도 메시지가 표시되며 무의미한 캐릭터가 강제로 생성되지 않음</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s2" data-pri="P1"><td>캐릭터 생성</td><td class="tid">TC-023</td><td>재생성 1일 3회 한도 초과 시도</td><td><span class="badge t-edge">Edge</span></td><td>당일 재생성을 3회 모두 사용한 상태</td><td>다시 생성 버튼 클릭 시도</td><td>한도 초과 안내가 표시되고 남은 횟수 0이 표시되며 버튼이 비활성화됨</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s2" data-pri="P2"><td>캐릭터 생성</td><td class="tid">TC-024</td><td>캐릭터 미생성 상태의 빈 화면</td><td><span class="badge t-edge">Edge</span></td><td>캐릭터를 아직 저장하지 않은 프로필 존재</td><td>프로필 또는 캐릭터 목록 화면 진입</td><td>아직 생성된 캐릭터가 없습니다 빈 상태 안내가 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s2" data-pri="P2"><td>캐릭터 생성</td><td class="tid">TC-025</td><td>재생성 시 변형 캐릭터 생성 및 잔여 횟수 갱신</td><td><span class="badge t-happy">Happy</span></td><td>캐릭터가 1회 생성되어 결과가 표시된 상태</td><td>다시 생성 버튼 클릭</td><td>직전 결과와 다른 변형 캐릭터 3종이 생성되고 남은 재생성 횟수가 1 감소하여 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s2" data-pri="P2"><td>캐릭터 생성</td><td class="tid">TC-026</td><td>캐릭터 저장 없이 화면 이탈 시도</td><td><span class="badge t-unhappy">Unhappy</span></td><td>캐릭터 생성 결과가 표시된 상태(저장 전)</td><td>내 캐릭터로 저장 없이 뒤로가기 또는 다른 화면으로 이동</td><td>저장하지 않은 캐릭터는 반영되지 않으며 재진입 시 이전 프로필 상태가 유지됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s3" data-pri="P0"><td>일기 자동생성</td><td class="tid">TC-027</td><td>오늘의 키워드 선택 후 수동 일기 생성</td><td><span class="badge t-happy">Happy</span></td><td>캐릭터가 저장된 프로필 존재</td><td>오늘의 키워드 선택 후 오늘의 일기 쓰기 클릭</td><td>200~400자의 1인칭 일기와 캐릭터 이미지·날짜가 함께 생성되어 표시됨</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s3" data-pri="P0"><td>일기 자동생성</td><td class="tid">TC-028</td><td>오후 9시 기준 자동 일기 생성</td><td><span class="badge t-happy">Happy</span></td><td>당일 사진 추가 업로드 또는 활동 기록이 있는 상태</td><td>오후 9시가 되는 시점까지 대기</td><td>사용자 조작 없이 자동으로 일기가 생성되어 일기장에 저장됨</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s3" data-pri="P1"><td>일기 자동생성</td><td class="tid">TC-029</td><td>캐릭터 미생성 상태에서 일기 생성 시도</td><td><span class="badge t-unhappy">Unhappy</span></td><td>캐릭터가 아직 생성되지 않은 프로필 존재</td><td>오늘의 일기 쓰기 클릭 시도</td><td>캐릭터 생성을 먼저 유도하는 안내가 표시되고 일기 생성이 시작되지 않음</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s3" data-pri="P2"><td>일기 자동생성</td><td class="tid">TC-030</td><td>사용자 수정 시 글자수 제한 초과(수정 기준 미정)</td><td><span class="badge t-edge">Edge</span></td><td>일기가 1건 생성되어 조회 가능한 상태</td><td>일기 내용을 400자를 초과하도록 직접 수정 시도</td><td>수정 시 글자수 상한 적용 여부가 명확히 안내되며 초과 저장 시 오류 없이 일관된 처리가 이루어짐</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s3" data-pri="P0"><td>일기 자동생성</td><td class="tid">TC-031</td><td>일기 생성 중 네트워크 타임아웃</td><td><span class="badge t-edge">Edge</span></td><td>일기 생성이 진행 중인 상태</td><td>생성 진행 중 네트워크 연결을 강제로 차단하거나 응답 지연 유발</td><td>생성 실패 및 타임아웃 안내와 재시도 옵션이 표시되고 무한 로딩으로 남지 않음</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s3" data-pri="P1"><td>일기 자동생성</td><td class="tid">TC-032</td><td>활동 데이터 부족으로 일기 생성 실패(AI 폴백)</td><td><span class="badge t-edge">Edge</span></td><td>당일 사진·활동 기록·키워드가 전혀 없는 상태</td><td>오늘의 일기 쓰기 클릭</td><td>기본 템플릿 일기 제공 또는 데이터 부족 안내 후 재시도를 유도하는 폴백이 동작함</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s3" data-pri="P1"><td>일기 자동생성</td><td class="tid">TC-033</td><td>일기 생성 언어를 영어로 변경 후 생성</td><td><span class="badge t-happy">Happy</span></td><td>설정 화면에서 일기 생성 언어를 영어로 변경 완료</td><td>변경 이후 새 일기 생성</td><td>이후 생성되는 일기가 영어로 작성됨</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s3" data-pri="P2"><td>일기 자동생성</td><td class="tid">TC-034</td><td>미지원 언어(예: 프랑스어) 기기에서 일기 생성(폴백 미정)</td><td><span class="badge t-edge">Edge</span></td><td>기기 언어가 한국어/영어/일본어 외 언어로 설정된 상태</td><td>일기 생성 실행</td><td>지원 언어 중 하나(예: 영어)로 자동 폴백되어 생성되거나 언어 선택을 요구하는 안내가 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s3" data-pri="P2"><td>일기 자동생성</td><td class="tid">TC-035</td><td>일기 0건 상태의 일기장 빈 화면</td><td><span class="badge t-edge">Edge</span></td><td>일기를 한 번도 생성하지 않은 신규 프로필 상태</td><td>일기장 탭 진입</td><td>작성된 일기가 없습니다 빈 상태 안내가 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s3" data-pri="P2"><td>일기 자동생성</td><td class="tid">TC-036</td><td>일기 삭제 기능 검증</td><td><span class="badge t-unhappy">Unhappy</span></td><td>일기가 1건 이상 생성된 상태</td><td>해당 일기를 삭제</td><td>삭제한 일기가 일기장 목록에서 즉시 제거되고 재조회되지 않음</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s4" data-pri="P1"><td>커뮤니티 피드</td><td class="tid">TC-037</td><td>정상 게시물 작성 및 피드 노출</td><td><span class="badge t-happy">Happy</span></td><td>캐릭터 또는 일기가 저장된 상태</td><td>이미지 첨부, 본문 500자 이내 작성, 해시태그 입력 후 게시 클릭</td><td>게시물이 즉시 생성되어 피드 최상단에 노출됨</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s4" data-pri="P2"><td>커뮤니티 피드</td><td class="tid">TC-038</td><td>본문 501자 입력 시 게시 차단</td><td><span class="badge t-unhappy">Unhappy</span></td><td>게시물 작성 화면 진입 상태</td><td>본문에 501자 이상 텍스트 입력 후 게시 시도</td><td>500자 제한 초과 안내가 표시되고 게시가 차단됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s4" data-pri="P2"><td>커뮤니티 피드</td><td class="tid">TC-039</td><td>사진 5장 첨부 시도(최대 4장 제한)</td><td><span class="badge t-unhappy">Unhappy</span></td><td>게시물 작성 화면에서 사진 4장이 이미 첨부된 상태</td><td>5번째 사진 첨부 시도</td><td>4장을 초과하는 첨부가 차단되고 안내가 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s4" data-pri="P2"><td>커뮤니티 피드</td><td class="tid">TC-040</td><td>해시태그 11개 입력 시도(최대 10개 제한)</td><td><span class="badge t-unhappy">Unhappy</span></td><td>게시물 작성 화면에서 해시태그 10개가 이미 입력된 상태</td><td>11번째 해시태그 입력 시도</td><td>10개를 초과하는 해시태그 입력이 차단되고 안내가 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s4" data-pri="P2"><td>커뮤니티 피드</td><td class="tid">TC-041</td><td>본문·사진 모두 없이 게시 시도(최소 콘텐츠 기준 미정)</td><td><span class="badge t-edge">Edge</span></td><td>게시물 작성 화면 진입 상태</td><td>본문과 사진을 모두 비운 채 게시 클릭</td><td>최소 1개 이상의 콘텐츠(텍스트 또는 이미지)가 필요하다는 안내가 표시되고 게시가 차단됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s4" data-pri="P2"><td>커뮤니티 피드</td><td class="tid">TC-042</td><td>팔로우·게시물 없는 신규 계정의 빈 피드</td><td><span class="badge t-edge">Edge</span></td><td>팔로우한 사용자와 게시물 작성 이력이 없는 신규 계정 상태</td><td>피드 화면 진입</td><td>아직 게시물이 없습니다 등 빈 상태 안내가 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s4" data-pri="P1"><td>커뮤니티 피드</td><td class="tid">TC-043</td><td>무한 스크롤 중 네트워크 끊김</td><td><span class="badge t-edge">Edge</span></td><td>피드에서 게시물을 스크롤 중인 상태</td><td>다음 20개 게시물 로딩 시점에 네트워크 연결을 강제로 차단</td><td>로딩 실패 안내와 재시도 옵션이 표시되고 로딩 스피너가 무한히 표시되지 않음</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s4" data-pri="P1"><td>커뮤니티 피드</td><td class="tid">TC-044</td><td>비로그인 상태에서 게시물 작성·좋아요 시도</td><td><span class="badge t-edge">Edge</span></td><td>로그아웃 상태 또는 비로그인 상태</td><td>게시물 작성, 좋아요, 댓글 중 하나를 시도</td><td>로그인 유도 화면이 표시되고 해당 동작이 차단됨</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s4" data-pri="P2"><td>커뮤니티 피드</td><td class="tid">TC-045</td><td>해시태그 검색 결과 탭 구분 표시</td><td><span class="badge t-happy">Happy</span></td><td>해당 해시태그를 사용한 게시물이 존재하는 상태</td><td>검색창에 해시태그 입력 후 검색</td><td>게시물 탭과 사용자 탭으로 구분된 검색 결과가 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s4" data-pri="P2"><td>커뮤니티 피드</td><td class="tid">TC-046</td><td>검색 결과 0건 상태</td><td><span class="badge t-edge">Edge</span></td><td>검색어에 해당하는 게시물·사용자가 존재하지 않는 상태</td><td>존재하지 않는 해시태그 또는 닉네임으로 검색</td><td>검색 결과가 없습니다 빈 상태 안내가 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s4" data-pri="P2"><td>커뮤니티 피드</td><td class="tid">TC-047</td><td>팔로우 사용자 신규 게시물 우선 노출</td><td><span class="badge t-happy">Happy</span></td><td>특정 사용자를 팔로우한 상태</td><td>팔로우한 사용자가 새 게시물을 작성</td><td>해당 게시물이 피드에 우선적으로 노출됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s5" data-pri="P2"><td>알림</td><td class="tid">TC-048</td><td>캐릭터 생성 완료 푸시 알림 발송</td><td><span class="badge t-happy">Happy</span></td><td>알림 권한이 허용되고 푸시 알림이 ON인 상태</td><td>캐릭터 생성을 완료</td><td>캐릭터 생성 완료 푸시 알림이 즉시 수신됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s5" data-pri="P1"><td>알림</td><td class="tid">TC-049</td><td>알림 종류별 ON/OFF 토글 즉시 반영</td><td><span class="badge t-happy">Happy</span></td><td>알림 설정 화면 진입 상태</td><td>특정 알림 종류를 OFF로 토글</td><td>설정이 즉시 반영되고 화면 내 토글 상태가 OFF로 유지됨</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s5" data-pri="P1"><td>알림</td><td class="tid">TC-050</td><td>알림 OFF 설정 시 실제 미수신 검증</td><td><span class="badge t-unhappy">Unhappy</span></td><td>좋아요 알림이 OFF로 설정된 상태</td><td>다른 사용자가 내 게시물에 좋아요 누름</td><td>좋아요 알림이 발송되지 않음</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s5" data-pri="P1"><td>알림</td><td class="tid">TC-051</td><td>앱 재시작 후 알림 설정값 유지 여부(저장 방식 미정)</td><td><span class="badge t-edge">Edge</span></td><td>특정 알림을 OFF로 변경한 직후 앱을 강제 종료한 상태</td><td>앱을 재실행하여 알림 설정 화면 재진입</td><td>OFF로 설정한 값이 유지되어 표시됨</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s5" data-pri="P2"><td>알림</td><td class="tid">TC-052</td><td>OS 알림 권한 미허용 상태에서 알림 이벤트 발생</td><td><span class="badge t-edge">Edge</span></td><td>OS 설정에서 앱의 알림 권한이 거부된 상태</td><td>알림을 유발하는 이벤트(예: 캐릭터 생성 완료) 발생</td><td>푸시 알림 대신 앱 내 배지 또는 인앱 알림으로 대체 표시되고 크래시가 발생하지 않음</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s5" data-pri="P2"><td>알림</td><td class="tid">TC-053</td><td>알림 0건 상태의 빈 알림함</td><td><span class="badge t-edge">Edge</span></td><td>수신된 알림이 없는 신규 계정 상태</td><td>알림함 화면 진입</td><td>알림이 없습니다 빈 상태 안내가 표시됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s5" data-pri="P1"><td>알림</td><td class="tid">TC-054</td><td>알림 설정 변경 중 네트워크 끊김</td><td><span class="badge t-edge">Edge</span></td><td>알림 설정 화면에서 토글 변경을 시도하는 상태</td><td>토글 변경 시점에 네트워크 연결을 강제로 차단</td><td>서버 저장 실패 안내가 표시되고 재시도 전까지 로컬 표시와 실제 서버 값의 불일치가 사용자에게 고지됨</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s6" data-pri="P0"><td>계정·인증</td><td class="tid">TC-055</td><td>이메일 회원가입 및 인증 완료</td><td><span class="badge t-happy">Happy</span></td><td>가입 화면 진입 상태</td><td>이메일·8자 이상 비밀번호·닉네임 입력 후 가입, 24시간 내 인증 메일 링크 클릭</td><td>계정이 생성되고 인증 완료 후 정상 로그인이 가능함</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s6" data-pri="P0"><td>계정·인증</td><td class="tid">TC-056</td><td>소셜 로그인(구글/애플/카카오) 가입</td><td><span class="badge t-happy">Happy</span></td><td>가입 화면 진입 상태</td><td>구글 계정으로 소셜 로그인 진행</td><td>별도 이메일 인증 없이 계정이 생성되고 즉시 로그인됨</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s6" data-pri="P2"><td>계정·인증</td><td class="tid">TC-057</td><td>비밀번호 7자 입력 시 가입 차단</td><td><span class="badge t-unhappy">Unhappy</span></td><td>이메일 회원가입 화면 진입 상태</td><td>비밀번호 필드에 7자 입력 후 가입 시도</td><td>8자 미달 안내가 표시되고 가입이 차단됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s6" data-pri="P1"><td>계정·인증</td><td class="tid">TC-058</td><td>비밀번호 최대 길이 미정 — 초장문 입력(경계값)</td><td><span class="badge t-edge">Edge</span></td><td>이메일 회원가입 화면 진입 상태</td><td>비밀번호 필드에 300자 이상 문자열 입력 후 가입 시도</td><td>허용 여부가 명확히 안내되며 서버 오류나 앱 크래시 없이 처리됨</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s6" data-pri="P1"><td>계정·인증</td><td class="tid">TC-059</td><td>만 14세 미만 생년월일로 가입 시도</td><td><span class="badge t-unhappy">Unhappy</span></td><td>이메일 회원가입 화면 진입 상태</td><td>만 14세 미만에 해당하는 생년월일 입력 후 가입 시도</td><td>연령 미달 안내가 표시되고 가입이 차단됨</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s6" data-pri="P1"><td>계정·인증</td><td class="tid">TC-060</td><td>이메일 인증 24시간 초과 후 링크 클릭</td><td><span class="badge t-unhappy">Unhappy</span></td><td>가입 후 24시간이 경과했고 이메일 인증을 완료하지 않은 상태</td><td>인증 이메일의 링크 클릭</td><td>인증 만료 안내가 표시되고 인증 메일 재발송 옵션이 제공됨</td><td><span class="badge p-p1">P1</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s6" data-pri="P2"><td>계정·인증</td><td class="tid">TC-061</td><td>닉네임 1자 또는 16자 입력 시도(2~15자 제한)</td><td><span class="badge t-unhappy">Unhappy</span></td><td>프로필 관리 화면 진입 상태</td><td>닉네임을 1자 또는 16자로 입력 후 저장 시도</td><td>2~15자 제한 안내가 표시되고 저장이 차단됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s6" data-pri="P0"><td>계정·인증</td><td class="tid">TC-062</td><td>회원가입 처리 중 네트워크 끊김(계정 미생성 위험)</td><td><span class="badge t-edge">Edge</span></td><td>이메일 회원가입 정보 입력을 완료하고 제출한 상태</td><td>서버 응답 대기 중 네트워크 연결을 강제로 차단</td><td>가입 실패 안내와 재시도가 제공되며 계정이 불완전한 상태로 생성되지 않음</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s6" data-pri="P0"><td>계정·인증</td><td class="tid">TC-063</td><td>계정 삭제 시 전체 데이터 삭제</td><td><span class="badge t-happy">Happy</span></td><td>반려동물·캐릭터·일기·게시물이 있는 계정 상태</td><td>삭제 사유 선택, 비밀번호 재확인, 계정 삭제 진행</td><td>반려동물 프로필·캐릭터·일기·게시물이 모두 삭제 처리됨</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s6" data-pri="P0"><td>계정·인증</td><td class="tid">TC-064</td><td>계정 삭제 처리 중 앱 강제 종료</td><td><span class="badge t-edge">Edge</span></td><td>계정 삭제 절차(비밀번호 재확인 이후) 진행 중인 상태</td><td>삭제 처리 중 앱을 강제 종료 후 재실행</td><td>삭제가 완료된 상태 또는 삭제 전 상태 중 하나로 일관되게 유지되며 데이터 정합성 오류나 복구 불가 상태가 발생하지 않음</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-ai">AI추가</span></td></tr>
+      <tr data-s="s6" data-pri="P0"><td>계정·인증</td><td class="tid">TC-065</td><td>삭제 후 30일 내 재로그인 시 데이터 복구</td><td><span class="badge t-happy">Happy</span></td><td>계정 삭제 후 10일이 경과한 상태</td><td>동일 계정으로 재로그인</td><td>삭제 전 반려동물·캐릭터·일기·게시물 데이터가 복구됨</td><td><span class="badge p-p0">P0</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s6" data-pri="P2"><td>계정·인증</td><td class="tid">TC-066</td><td>삭제 후 31일 경과 후 재로그인 시도</td><td><span class="badge t-unhappy">Unhappy</span></td><td>계정 삭제 후 31일이 경과한 상태</td><td>동일 계정으로 재로그인 시도</td><td>기존 데이터는 영구 삭제되어 복구되지 않고 신규 가입처럼 처리됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+      <tr data-s="s6" data-pri="P2"><td>계정·인증</td><td class="tid">TC-067</td><td>비밀번호 변경 시 현재 비밀번호 오류 입력</td><td><span class="badge t-unhappy">Unhappy</span></td><td>프로필 관리 화면에서 비밀번호 변경 진입 상태</td><td>현재 비밀번호를 잘못 입력 후 변경 시도</td><td>현재 비밀번호 불일치 안내가 표시되고 변경이 차단됨</td><td><span class="badge p-p2">P2</span></td><td><span class="src src-spec">기획서기반</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- AI Added Edge Cases -->
+<div class="section">
+  <div class="section-title">🧩 AI가 보완한 엣지케이스 — 기획서에 없던 것 (29건)</div>
+  <div class="edge-grid">
+    <div class="edge-card">
+      <div class="edge-type">권한 · P1</div>
+      <div class="edge-title">카메라/갤러리 권한 미허용 시 업로드 (TC-007, 008)</div>
+      <div class="edge-body">기획서는 정상 업로드만 기술. 권한 거부 시 크래시·무한로딩 위험 → 권한 안내 + 설정 이동 폴백 필수.</div>
+    </div>
+    <div class="edge-card">
+      <div class="edge-type">네트워크 · P0</div>
+      <div class="edge-title">캐릭터 생성 중 네트워크 끊김 (TC-021)</div>
+      <div class="edge-body">고비용 AI 연산 중단 시 재생성 횟수가 부당 차감되면 클레임 발생. 재시도 + 횟수 미차감 처리 필수.</div>
+    </div>
+    <div class="edge-card">
+      <div class="edge-type">경계값 · P1</div>
+      <div class="edge-title">재생성 1일 3회 한도 초과 (TC-023)</div>
+      <div class="edge-body">한도 정책은 명세에 있으나 초과 흐름이 없음. 안내 문구·버튼 비활성화로 명확화.</div>
+    </div>
+    <div class="edge-card">
+      <div class="edge-type">경계값 · P1</div>
+      <div class="edge-title">10MB 초과 이미지 / 초고해상도 사진 (TC-011, 012)</div>
+      <div class="edge-body">명세에 최소 해상도(512px)만 있고 최대 크기·용량 기준 미명시. 경계값 정의 필요.</div>
+    </div>
+    <div class="edge-card">
+      <div class="edge-type">AI폴백 · P1</div>
+      <div class="edge-title">AI 분석 기준 미달 사진·데이터 부족 폴백 (TC-022, 032)</div>
+      <div class="edge-body">반려동물 아닌 사진 입력 시, 또는 활동 데이터 없을 때 폴백 동작이 기획서에 명시되지 않음.</div>
+    </div>
+    <div class="edge-card">
+      <div class="edge-type">빈 상태 · P2</div>
+      <div class="edge-title">일기장·피드·알림함·캐릭터 0건 빈 화면 (TC-014, 024, 035, 042, 053)</div>
+      <div class="edge-body">데이터 0건 처리 누락은 흔한 함정. 빈 화면 대신 안내 문구 + 행동 유도(CTA) 필수.</div>
+    </div>
+    <div class="edge-card">
+      <div class="edge-type">네트워크 · P0</div>
+      <div class="edge-title">회원가입·삭제 처리 중 강제 종료 (TC-062, 064)</div>
+      <div class="edge-body">트랜잭션 중단 시 데이터 정합성 붕괴 위험(비가역). 일관 상태 보장 및 복구 가능 여부 검증.</div>
+    </div>
+    <div class="edge-card">
+      <div class="edge-type">권한 · P1</div>
+      <div class="edge-title">비로그인 상태에서 게시물 작성·좋아요 시도 (TC-044)</div>
+      <div class="edge-body">기획서에 비로그인 접근 차단 명세 없음. 로그인 유도 화면으로 리다이렉트 여부 확인.</div>
+    </div>
+    <div class="edge-card">
+      <div class="edge-type">경계값/폴백 · P2</div>
+      <div class="edge-title">미지원 언어(프랑스어 등)에서 일기 생성 (TC-034)</div>
+      <div class="edge-body">한/영/일만 지원하나 그 외 언어 요청 시 폴백(영어) + 안내 미명시. 글로벌 출시 필수 검증.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Decision log -->
+<div class="section">
+  <div class="section-title">📝 의사결정 로그</div>
+  <div class="tbl-wrap">
+  <table class="dec-table">
+    <thead><tr><th>결정 항목</th><th>선택 기준</th><th>근거</th></tr></thead>
+    <tbody>
+      <tr><td>P0 기준</td><td>점수 80점 이상 = P0</td><td>서비스 중단(50%) + 영향 범위(30%) + 우회 불가(20%) → 3요소 겹칠 때 즉시 P0 승격</td></tr>
+      <tr><td>P1 기준</td><td>점수 50~79 = P1</td><td>핵심 기능 동작하나 사용자 이탈 유발 수준. 한도 초과·다국어·비로그인 차단 포함</td></tr>
+      <tr><td>P2 기준</td><td>점수 50 미만 = P2</td><td>핵심 기능 사용에 지장 없음. 빈 상태 문구·비핵심 경계값 처리 포함</td></tr>
+      <tr><td>AI 폴백 케이스</td><td>기능 동작 검증으로 분류</td><td>AI 품질 주관 평가 아닌 "폴백 동작 여부(안내/재시도)" 검증 → 과제 제외 범위 해당 없음</td></tr>
+      <tr><td>엣지케이스 추가 근거</td><td>4유형 + AI폴백 5유형 전체 커버</td><td>빈 상태/권한/네트워크/경계값 4유형 + AI폴백(Petbbi 특성 추가) 각 최소 3건 이상 포함</td></tr>
+      <tr><td>제외 범위 준수</td><td>성능·보안·디자인 QA 제외</td><td>과제 ⑥ 기준 — 기능 동작·엣지 케이스 보완에만 집중. 성능·CI 연동·픽셀 QA 미포함</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+</div>
+<script>
+let curSec = 'all', curPri = 'all', curType = 'all', perPage = 20, curPage = 1;
+
+function getTypeBadge(row) {
+  const badge = row.cells[3].querySelector('.badge');
+  if (!badge) return '';
+  if (badge.classList.contains('t-happy')) return 'Happy Path';
+  if (badge.classList.contains('t-unhappy')) return 'Unhappy Path';
+  if (badge.classList.contains('t-edge')) return 'Edge Case';
+  return '';
+}
+
+function applyFilters() {
+  const allRows = Array.from(document.querySelectorAll('#qt tbody tr'));
+  const matched = allRows.filter(r => {
+    const secMatch = curSec === 'all' || r.dataset.s === curSec;
+    const priMatch = curPri === 'all' || r.dataset.pri === curPri;
+    const typeMatch = curType === 'all' || getTypeBadge(r) === curType;
+    return secMatch && priMatch && typeMatch;
+  });
+
+  allRows.forEach(r => r.style.display = 'none');
+
+  const total = matched.length;
+  const limit = perPage === 'all' ? total : perPage;
+  const start = (curPage - 1) * (perPage === 'all' ? total : perPage);
+  const end = Math.min(start + limit, total);
+  matched.slice(start, end).forEach(r => r.style.display = '');
+
+  // 결과 안내 업데이트
+  const from = total === 0 ? 0 : start + 1;
+  const infoEl = document.getElementById('resultInfo');
+  if (perPage === 'all') {
+    infoEl.textContent = `총 ${total}건 표시 중`;
+  } else {
+    infoEl.textContent = `총 ${total}건 중 ${from}~${end}번째 표시`;
+  }
+
+  // 페이지네이션 렌더
+  renderPagination(total, matched);
+}
+
+function renderPagination(total, matched) {
+  let pager = document.getElementById('pager');
+  if (!pager) {
+    pager = document.createElement('div');
+    pager.id = 'pager';
+    pager.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;align-items:center;';
+    document.querySelector('.tbl-wrap').after(pager);
+  }
+  pager.innerHTML = '';
+  if (perPage === 'all' || total <= perPage) return;
+
+  const totalPages = Math.ceil(total / perPage);
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.style.cssText = `padding:4px 10px;border:1.5px solid ${i === curPage ? '#6c5ce7' : '#dee2e6'};border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:${i === curPage ? '#6c5ce7' : 'white'};color:${i === curPage ? 'white' : '#444'};`;
+    btn.onclick = () => { curPage = i; applyFilters(); };
+    pager.appendChild(btn);
+  }
+}
+
+function ft(type, val, btn) {
+  curPage = 1;
+  if (type === 'sec') {
+    curSec = val;
+    document.querySelectorAll('.filter-group:nth-child(1) .f-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+  } else if (type === 'pri') {
+    curPri = val;
+    document.querySelectorAll('.filter-group:nth-child(2) .f-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+  } else if (type === 'type') {
+    curType = val;
+  }
+  applyFilters();
+}
+
+function changePerPage(val) {
+  perPage = val === 'all' ? 'all' : parseInt(val);
+  curPage = 1;
+  applyFilters();
+}
+
+// 초기 실행
+applyFilters();
+</script>
+</body>
+</html>
